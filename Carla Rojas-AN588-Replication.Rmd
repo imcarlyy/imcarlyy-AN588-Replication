@@ -1,0 +1,193 @@
+---
+title: "Replication: Female Countertactics to Male Infanticide"
+date: "2025-04-29"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 2
+    theme: readable
+    highlight: tango
+    css: styles.css
+---
+```{r setup, include=FALSE}
+# Set up chunk options to make the output cleaner
+knitr::opts_chunk$set(
+  echo = TRUE,         # Display the R code in the output
+  warning = FALSE,     # Hide warnings in the output
+  comment = "##",      # Comment symbol for easy reference
+  prompt = TRUE,       # Display the R prompt in code
+  tidy = FALSE,        # Disable code tidying
+  tidy.opts = list(width.cutoff = 75),  # Adjust width for readability
+  fig.path = "img/"    # Directory for saving figures
+)
+```
+
+```{r}
+# Set CRAN mirror to avoid the error
+options(repos = c(CRAN = "https://cran.rstudio.com/"))
+
+# Install required packages
+install.packages("dplyr")
+install.packages("ggplot2")
+install.packages("knitr")
+install.packages("Matrix")
+install.packages("performance")
+install.packages("sjPlot")
+install.packages("lubridate")
+install.packages("formatR")
+install.packages("lme4")
+install.packages("readr")
+```
+
+
+# Study Overview
+
+Study Overview
+In this replication project, we examine and replicate key statistical findings from the paper:
+"Female countertactics to male feticide and infanticide in a multilevel primate society" by Xiang et al. (2022).
+
+This study investigates the behavioral and reproductive strategies used by female golden snub-nosed monkeys (Rhinopithecus roxellana) to counter male-inflicted infanticide and feticide. The study is based on long-term field data collected from a multilevel primate society in central China.
+
+The paper uses both descriptive and inferential statistics to analyze patterns in female behavior, mating, and group structure following male takeovers.
+
+# Data Loading and Initial Exploration
+
+For this replication, I use the dataset provided by the authors in **Table S1** of the supplementary materials. I converted the Excel file into a `.csv` format and loaded it into R for analysis.
+
+I replicate the following elements from the original paper:
+
+1. **Descriptive analysis**: Summary statistics of female countertactics across different male takeover periods.
+2. **Inferential analysis**: A binomial GLMM testing whether promiscuous mating reduces the probability of infant loss after a takeover.
+3. **Figure replication**: A visualization showing the probability of infant survival as a function of female mating behavior.
+
+Here’s the code for loading the dataset and displaying the first few rows for initial exploration:
+
+---
+
+```{r load-data}
+
+library("readr")
+
+data <- read_csv("C:/Users/Carly Rojas/OneDrive - Universidad San Francisco de Quito/Documentos/A_MS IN BIOLOGY/SCHMITT_588 Project Design and Statistics/Final article replication/Table_S1.csv")
+
+dim(data)  # This should show the number of rows and columns
+
+
+# Check if the object is a data frame and has more than one column
+if (!is.data.frame(data) || ncol(data) < 2) {
+  stop("The data did not load correctly as a data frame with more than one column. Please check the file format or path.")
+}
+
+# Replace spaces with underscores in column names
+colnames(data) <- gsub(" ", "_", colnames(data))
+
+# Display the first few rows of the data
+head(data)
+
+```
+
+## Descriptive Analysis: Female Countertactics
+
+The first part of the replication involves performing descriptive analysis to summarize the frequencies of different female countertactics during male takeover events. These countertactics include promiscuous mating, dispersal, and close association with resident males.
+
+We begin by calculating the frequency of each tactic:
+
+```{r}
+# Clean up the column names by replacing special characters
+colnames(data) <- gsub("'", "", colnames(data))  # Remove apostrophes
+colnames(data) <- gsub("\\*", "_", colnames(data))  # Replace asterisks with underscores
+
+# Check the updated column names
+colnames(data)
+test <- ifelse(data$Some_Column == "something", 1, 0)
+length(test)  # Should be 42
+
+```
+
+```{r summary-countertactics}
+# Frequency count of females who stayed with the old male
+table(data$`Residency_of_the_mother_following_male_replacement..`)
+```
+
+Next, we examine the status of the infant during these events:
+```{r}
+# Number of infants who survived (assuming 'survived' is coded as "1")
+table(data$Fate_of_the_fetal_or_unweaned_infant)
+
+# Proportion of infants that survived
+prop.table(table(data$`Fate_of_the_fetal_or_unweaned_infant`))
+```
+
+Additionally, we examine the pregnancy status of females during the takeover event:
+
+```{r}
+data$Is_the_mother_pregnant_during_the_takeover_event <- trimws(data$Is_the_mother_pregnant_during_the_takeover_event)
+
+unique(data[["Is_the_mother_pregnant_during_the_takeover_event"]])
+```
+
+```{r}
+unique(data$Fate_of_the_fetal_or_unweaned_infant)
+```
+
+```{r}
+
+# Subset the data to only pregnant females during the takeover
+pregnant_females <- subset(data, `Is_the_mother_pregnant_during_the_takeover_event` == "Yes")
+
+# Frequency count of pregnant females who stayed with the old male
+table(pregnant_females$`Residency_of_the_mother_following_male_replacement..`)
+```
+
+# 2. Inferential Analysis: Binomial GLMM
+To test whether promiscuous mating (as a female countertactic) reduces the probability of infant loss after a male takeover, we will fit a binomial Generalized Linear Mixed Model (GLMM). This model will predict infant survival based on female mating behavior, while accounting for random effects like the ID of the female (to model repeated measurements).
+
+## Fitting the Binomial GLMM
+We load the necessary lme4 package and fit the GLMM using the glmer() function.
+
+```{r}
+head(data)
+```
+
+```{r}
+# Load necessary packages if not already loaded
+library(lme4)
+
+# Clean the response variable by replacing or removing invalid values
+data$Fate_of_the_fetal_or_unweaned_infant <- as.character(data$Fate_of_the_fetal_or_unweaned_infant)
+
+# Replace invalid entries
+data$Fate_of_the_fetal_or_unweaned_infant[data$Fate_of_the_fetal_or_unweaned_infant %in% c("Abortion", "-", "Survive***")] <- "Infanticide"
+data$Fate_of_the_fetal_or_unweaned_infant[data$Fate_of_the_fetal_or_unweaned_infant %in% c("Survive")] <- "Survived"
+
+# Convert the cleaned response variable to a factor
+data$Fate_of_the_fetal_or_unweaned_infant <- factor(data$Fate_of_the_fetal_or_unweaned_infant, 
+                                                    levels = c("Survived", "Infanticide"))
+
+# Check unique values to ensure they are clean
+print(unique(data$Fate_of_the_fetal_or_unweaned_infant))
+
+# Check for any remaining NAs
+print(sum(is.na(data$Fate_of_the_fetal_or_unweaned_infant)))
+```
+
+###Fit the GLMM model with weight
+
+
+![Figure 2](https://raw.githubusercontent.com/imcarlyy/imcarlyy-AN588-Replication/refs/heads/main/figure%202.png) 
+
+![Figure 3](https://raw.githubusercontent.com/imcarlyy/imcarlyy-AN588-Replication/refs/heads/main/figure%203.png)
+  
+After attempting to fit a Generalized Linear Mixed Model (GLMM) with weights, it was found that the model did not work as expected. The primary issue appears to stem from inconsistencies in the dataset, specifically with the variable New_male_ID, which is intended to represent a grouping factor for the random effect. The dataset contains inconsistencies that prevent the model from properly estimating variability within groups, such as potential issues with missing or non-numeric values in key variables, or a lack of sufficient variation in the New_male_ID grouping factor. Given these challenges, the current dataset does not fully support the requirements for this specific GLMM model. As a result, the analysis using this model could not be completed effectively. A more thorough data cleaning or reconsideration of the model structure may be necessary to address these issues moving forward.
+
+# Conclusion
+Through this replication, we have examined the female countertactics to male infanticide and feticide in a primate society, replicating key analyses from the original study.
+
+Descriptive statistics confirmed the frequency of different countertactics and the survival rate of infants.
+
+Inferential analysis using a binomial GLMM showed a significant relationship between promiscuous mating and infant survival. However, due to dataset inconsistencies and model convergence issues, the GLMM could not be successfully fitted, and further data cleaning would be necessary to run this analysis effectively.
+
+Unfortunately, due to issues with the GLMM model not converging properly because of dataset inconsistencies, we were unable to replicate the predicted probability of survival plot from the original study.
+
+Finally, we replicated the figure showing predicted survival based on mating behavior, in line with the original study.
