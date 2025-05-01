@@ -1,0 +1,43 @@
+Events,New male ID,ID of dependent offspring,Is the mother pregnant during the takeover event,OMU size that except infant,Male attack on pregnant female,Male attack on infant,Female's coalition*,Residency of the mother following male replacement**,Fate of the fetal or unweaned infant
+#1,XY,Jj07,Yes,5,Yes,-,-,New male,Abortion
+#1,XY,JzI07,Yes,5,-,No,-,-,-
+#2,DD,JzI07,No,5,/,Yes,Yes (3)a,New male,Infanticide
+#3,DY,L1I08,Yes,5,Yes,-,-,-,Abortion
+#3,DY,Hh2I08,Yes,5,-,-,-,-,-
+#3,DY,BbI08,Yes,5,-,-,-,-,-
+#4,XX,Hh2I08,No,5,/,Yes,Yes (4)c,Transfer,Survive
+#4,XX,BbI08,No,5,/,Yes,Yes (4)b,Transfer,Survive
+#5,DY,QqI08,No,9,/,Yes,Yes (3)a,Transfer,Survive
+#5,DY,Hh1I08,No,9,/,No,-,New male,Survive
+#5,DY,Hh3I08,No,9,/,No,-,New male,Survive
+#6,DW,LnI09,No,8,/,Yes,Yes (5)a,Transfer,Survive
+#6,DW,Yy1I09,No,8,/,Yes,Yes (4)c,Transfer,Survive
+#7,DY,-,No,6,/,-,-,-,-
+#8,NN,XbI12,Yes,6,-,-,-,New male,-
+#8,NN,Hh3I12,No,4,/,Yes,Yes (3)a,New male,Infanticide
+#8,NN,XbI12,No,4,/,Yes,Yes (3)a,New male,Infanticide
+#9,WY,NnI13,No,9,/,Yes,Yes (5)b,Transfer,Survive
+#9,WY,LlI13,No,9,/,No,-,New male,Survive
+#9,WY,YbI13,No,9,/,No,-,New male,Survive
+#10,XB,LnI13,No,12,/,No,-,New male,Survive
+#10,XB,Yy1I13,No,12,/,No,-,New male,Survive
+#11,HH4,Hh2I14,Yes,4,Yes,Yes,Yes (3)a,New male,Infanticide
+#12,XZ,JjI14,No,9,/,-,-,Old male,Survive
+#12,XZ,XeI14,No,9,/,No,-,New male,Survive
+#12,XZ,XyI14,No,9,/,No,-,New male,Survive
+#13,YH,EbI15,No,5,/,No,-,New male,Survive
+#14,GE,BbI15,No,11,/,Yes,Yes (3)a,Transfer,Survive***
+#14,GE,Tt2I15,No,11,/,No,-,New male,Survive
+#14,GE,YbI15,No,11,/,No,-,New male,Survive
+#14,GE,NnI15,No,11,/,No,-,New male,Survive
+#15,TD,XyI16,No,4,/,Yes,Yes (2)a,Transfer,Survive
+#15,TD,Jj2I16,No,4,/,No,-,New male,Survive
+#16,MH,Yb19,No,4,/,Yes,Yes (4)a,Transfer,Survive
+#16,MH,Ss19,No,4,/,No,-,New male,Survive
+#17,NN,Xf19,Yes,6,-,-,-,Old male,Survive
+#17,NN,Tt19,No,5,/,Yes,Yes (3)a,Transfer A,Survive
+#17,NN,Nn19,Yes,5,Yes,Yes,Yes (3)a,Transfer B,Survive
+#18,DHT,-,No,5,/,-,-,-,-
+#19,XN,Al20,Yes,7,-,Yes,Yes (3)a,New male,Infanticide
+#19,XN,Jjg20,Yes,7,-,Yes,Yes (4)b,New male,Infanticide
+#19,XN,Hhe20,No,10,/,Yes,-,Transfer A,Survive
